@@ -68,6 +68,7 @@ int main(int argc,char *argv[]){
 		xc[i] = XI + (XF-XI) *(double)(my_rank*index+i-1)/(double)(NGRID-1);
 	}
 	dx = xc[2]-xc[1];
+	//to calculate the boundry x values on end nodes
 	xc[0]=xc[1]-dx;
 	xc[rem+1] = xc[rem]+dx; 
 	/*for(i=1;i<=rem;i++){
@@ -82,9 +83,21 @@ int main(int argc,char *argv[]){
 	for(i=1;i<=rem;i++){
 		yc[i] = fn(xc[i]);
 	}
-	//set boundry values
-	yc[0] = fn(xc[0]);
-	yc[rem+1] = fn(xc[rem+1]);
+	//set boundry values from neigbouring nodes
+	if(my_rank==0){
+		MPI_Send(&(yc[rem]),1,MPI_DOUBLE,my_rank+1,my_rank,MPI_COMM_WORLD);
+		yc[0] = fn(xc[0]);
+		MPI_Recv(&(yc[rem+1]),1,MPI_DOUBLE,my_rank+1,my_rank+1,MPI_COMM_WORLD,&status);
+	} else if(my_rank==number_of_nodes-1){
+		yc[rem+1] = fn(xc[rem+1]);
+		MPI_Send(&(yc[1]),1,MPI_DOUBLE,my_rank-1,my_rank,MPI_COMM_WORLD);
+		MPI_Recv(&(yc[0]),1,MPI_DOUBLE,my_rank-1,my_rank-1,MPI_COMM_WORLD,&status);
+	} else{
+		MPI_Send(&(yc[1]),1,MPI_DOUBLE,my_rank-1,my_rank,MPI_COMM_WORLD);
+		MPI_Recv(&(yc[0]),1,MPI_DOUBLE,my_rank-1,my_rank-1,MPI_COMM_WORLD,&status);
+		MPI_Send(&(yc[rem]),1,MPI_DOUBLE,my_rank+1,my_rank,MPI_COMM_WORLD);
+		MPI_Recv(&(yc[rem+1]),1,MPI_DOUBLE,my_rank+1,my_rank+1,MPI_COMM_WORLD,&status);	
+	}
 	for(i=1;i<=rem;i++){
 		dyc[i] = ((yc[i+1]-yc[i-1])/(2.0*dx));
 	}
