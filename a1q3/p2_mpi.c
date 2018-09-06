@@ -35,7 +35,7 @@ int main(int argc,char *argv[]){
 	int number_of_nodes;
 	MPI_Init(&argc,&argv);
 	MPI_Status status;
-	MPI_Request request,req1,req2;
+	MPI_Request request,req1,req2,req3,req4;
 	MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&number_of_nodes);
 	if(argc>3){
@@ -85,18 +85,52 @@ int main(int argc,char *argv[]){
 	}
 	//set boundry values from neigbouring nodes
 	if(my_rank==0){
-		MPI_Send(&(yc[rem]),1,MPI_DOUBLE,my_rank+1,my_rank,MPI_COMM_WORLD);
 		yc[0] = fn(xc[0]);
-		MPI_Recv(&(yc[rem+1]),1,MPI_DOUBLE,my_rank+1,my_rank+1,MPI_COMM_WORLD,&status);
+		if (p2p == 0)
+		{
+			MPI_Send(&(yc[rem]), 1, MPI_DOUBLE, my_rank + 1, my_rank, MPI_COMM_WORLD);
+			MPI_Recv(&(yc[rem + 1]), 1, MPI_DOUBLE, my_rank + 1, my_rank + 1, MPI_COMM_WORLD, &status);
+		}
+		else
+		{
+			MPI_Isend(&(yc[rem]), 1, MPI_DOUBLE, my_rank + 1, my_rank, MPI_COMM_WORLD,&req1);
+			MPI_Irecv(&(yc[rem + 1]), 1, MPI_DOUBLE, my_rank + 1, my_rank + 1, MPI_COMM_WORLD, &req2);
+			MPI_Wait(&req1, &status);
+			MPI_Wait(&req2, &status);
+		}
 	} else if(my_rank==number_of_nodes-1){
 		yc[rem+1] = fn(xc[rem+1]);
-		MPI_Send(&(yc[1]),1,MPI_DOUBLE,my_rank-1,my_rank,MPI_COMM_WORLD);
-		MPI_Recv(&(yc[0]),1,MPI_DOUBLE,my_rank-1,my_rank-1,MPI_COMM_WORLD,&status);
+		if (p2p == 0)
+		{
+			MPI_Send(&(yc[1]), 1, MPI_DOUBLE, my_rank - 1, my_rank, MPI_COMM_WORLD);
+			MPI_Recv(&(yc[0]), 1, MPI_DOUBLE, my_rank - 1, my_rank - 1, MPI_COMM_WORLD, &status);
+		}
+		else
+		{
+			MPI_Isend(&(yc[1]), 1, MPI_DOUBLE, my_rank - 1, my_rank, MPI_COMM_WORLD,&req1);
+			MPI_Irecv(&(yc[0]), 1, MPI_DOUBLE, my_rank - 1, my_rank - 1, MPI_COMM_WORLD, &req2);
+			MPI_Wait(&req1, &status);
+			MPI_Wait(&req2, &status);
+		}
 	} else{
-		MPI_Send(&(yc[1]),1,MPI_DOUBLE,my_rank-1,my_rank,MPI_COMM_WORLD);
-		MPI_Recv(&(yc[0]),1,MPI_DOUBLE,my_rank-1,my_rank-1,MPI_COMM_WORLD,&status);
-		MPI_Send(&(yc[rem]),1,MPI_DOUBLE,my_rank+1,my_rank,MPI_COMM_WORLD);
-		MPI_Recv(&(yc[rem+1]),1,MPI_DOUBLE,my_rank+1,my_rank+1,MPI_COMM_WORLD,&status);	
+		if (p2p == 0)
+		{
+			MPI_Send(&(yc[1]), 1, MPI_DOUBLE, my_rank - 1, my_rank, MPI_COMM_WORLD);
+			MPI_Recv(&(yc[0]), 1, MPI_DOUBLE, my_rank - 1, my_rank - 1, MPI_COMM_WORLD, &status);
+			MPI_Send(&(yc[rem]), 1, MPI_DOUBLE, my_rank + 1, my_rank, MPI_COMM_WORLD);
+			MPI_Recv(&(yc[rem + 1]), 1, MPI_DOUBLE, my_rank + 1, my_rank + 1, MPI_COMM_WORLD, &status);
+		}
+		else
+		{
+			MPI_Isend(&(yc[1]), 1, MPI_DOUBLE, my_rank - 1, my_rank, MPI_COMM_WORLD,&req1);
+			MPI_Irecv(&(yc[0]), 1, MPI_DOUBLE, my_rank - 1, my_rank - 1, MPI_COMM_WORLD, &req2);
+			MPI_Isend(&(yc[rem]), 1, MPI_DOUBLE, my_rank + 1, my_rank, MPI_COMM_WORLD,&req3);
+			MPI_Irecv(&(yc[rem + 1]), 1, MPI_DOUBLE, my_rank + 1, my_rank + 1, MPI_COMM_WORLD, &req4);
+			MPI_Wait(&req1, &status);
+			MPI_Wait(&req2, &status);
+			MPI_Wait(&req3, &status);
+			MPI_Wait(&req4, &status);
+		}
 	}
 	for(i=1;i<=rem;i++){
 		dyc[i] = ((yc[i+1]-yc[i-1])/(2.0*dx));
