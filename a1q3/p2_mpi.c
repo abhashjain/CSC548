@@ -104,6 +104,7 @@ int main(int argc,char *argv[]){
 		yc[i] = fn(xc[i]);
 	}
 	//Get boundry values from neigbouring nodes
+	if(number_of_nodes > 1 ){
 	if(my_rank==0){
 		//On Rank 0 node we calculate the 1st value and transfer the last value to next node
 		//and recv next node 1st value in last index
@@ -153,6 +154,11 @@ int main(int argc,char *argv[]){
 			MPI_Wait(&req3, &status);
 			MPI_Wait(&req4, &status);
 		}
+	}
+	}//End of if for number of nodes
+	else {	//there is only one node than calculate boundry values
+		yc[0] = fn(xc[0]);
+		yc[rem+1] = fn(xc[rem+1]);
 	}
 	/*for(i=0;i<=rem+1;i++){
 		printf("rank %d number count is %d: yc: %lf\n",my_rank,i,yc[i]);
