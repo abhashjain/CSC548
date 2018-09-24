@@ -103,6 +103,7 @@ int MPI_Init( int *argc, char ***argv ){
 		m_data->port_table[i++] = atoi(line);
 	}
 	fclose(fp);
+	m_data->portNumber = m_data->port_table[m_data->my_rank];
 
 	//create a new server socket and set up till listen mode
 	int opt =1;
@@ -133,6 +134,16 @@ int MPI_Init( int *argc, char ***argv ){
         DEBUG_LOG(log_buf);
         return -1;
     }
+	MPI_Barrier(1);
+	/*if(m_data->my_rank==0){
+		DIR* dir = opendir(TEMP_DIR);
+		if (dir)
+		{
+   	 	// Directory exists. /
+   	 	closedir(dir);
+		rmrf(TEMP_DIR);
+		}
+	}*/
 	sprintf(log_buf,"%s: Done for rank %d",__FUNCTION__,m_data->my_rank);
 	DEBUG_LOG(log_buf);
 	return 1;
@@ -172,8 +183,10 @@ int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int ta
 
     if (connect(sock,(struct sockaddr *)&client_addr, sizeof(client_addr)) < 0)  
     {   
-		sprintf(log_buf,"ERROR: %s: connection failed %d\n",__FUNCTION__,m_data->my_rank);   
-        DEBUG_LOG(log_buf);
+		sprintf(log_buf,"ERROR: %s: connection failed %d for dst node %d\n",__FUNCTION__,m_data->my_rank,dest);   
+        fprintf(stderr,"Error while opening connection for my_rank %d is %s\n",m_data->my_rank,strerror( errno ));
+		fflush(stderr);
+		DEBUG_LOG(log_buf);
         return -1; 
     }
 	send(sock,buf,count,0);
@@ -184,7 +197,7 @@ int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int ta
 		DEBUG_LOG(log_buf);
 		return -1;
 	}
-	sprintf(log_buf,"Send is successful for rank %d\n",m_data->my_rank);
+	sprintf(log_buf,"Send is successful for rank %d to rank %d\n",m_data->my_rank,dest);
 	DEBUG_LOG(log_buf);
 	return 0;
 }
@@ -220,3 +233,48 @@ int MPI_Finalize( void ){
 	return 0;
 }
 
+int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
+{
+    int rv = remove(fpath);
+
+    if (rv)
+        perror(fpath);
+
+    return rv; 
+}
+
+int rmrf(char *path)
+{
+    return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+}
+
+int count(char *dir){
+	struct dirent *de;
+	int count =0;
+	DIR *dr = opendir(TEMP_DIR);
+	if(dr==NULL){
+		return 0;	
+	}
+	while((de = readdir(dr))!=NULL){
+		count++;
+	}
+	closedir(dr);
+	sprintf(log_buf,"Count is %d for rank %d",count,m_data->my_rank);
+	DEBUG_LOG(log_buf);
+	return count;
+}
+
+int MPI_Barrier( MPI_Comm comm ){
+	char filename[20]; 
+	FILE *fp = NULL;
+	mkdir(TEMP_DIR,0700);
+	sprintf(filename,"%s/%d",TEMP_DIR,m_data->my_rank);
+	fp = fopen(filename,"w");
+	fclose(fp);
+	int c = 0;
+	sleep(1);
+	while(c!=m_data->total_process+2){
+		c = count(TEMP_DIR);
+	}
+	return 0;
+}

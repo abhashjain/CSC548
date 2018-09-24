@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE 500
 #ifndef MY_MPI
 #define MY_MPI
 #include<stdio.h>
@@ -11,6 +12,9 @@
 #include<netdb.h>
 #include<arpa/inet.h>
 #include<errno.h>
+#include <netinet/tcp.h>
+#include <dirent.h>
+#include<ftw.h>
 
 //#define MPI_Status "int"
 typedef struct _MPI_Status {
@@ -28,6 +32,7 @@ typedef int MPI_Datatype;
 #define PORTFILE "port.txt"
 #define BUFFER_SIZE 1024
 #define HOST_LENGTH 256
+#define TEMP_DIR "my_mpi_dir"
 
 //#define MPI_Datatype char*
 //#define MPI_CHAR char
@@ -60,6 +65,6 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag,MP
 int MPI_Finalize( void );
 int MPI_Comm_rank( MPI_Comm comm, int *rank );
 int MPI_Comm_size( MPI_Comm comm, int *size );
-
+int MPI_Barrier( MPI_Comm comm );
 
 #endif

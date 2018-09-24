@@ -46,24 +46,24 @@ int main(int argc,char **argv){
 	}
     int msg_size[] = {32,64,128,256,512,1024,1024*2,1024*4,1024*8,1024*16,1024*32,1024*64,1024*128,1024*256,1024*512,1024*1024,1024*1024*2};
 	//For loop to iterate over all the msg_size
-	for(int k=0;k<1;k++){
+	for(int k=0;k<10;k++){
 	int msg_sz = msg_size[k];
 	char *message = (char *) calloc(msg_sz,sizeof(char)) ;
 	memset(message,'a',sizeof(char)*msg_sz);
 	if(my_rank<4){
 		MPI_Send(message,msg_sz+1,MPI_CHAR,my_rank+4,tag,MPI_COMM_WORLD);
-		printf("Rachana Jain: mesage is %s rank is %d\n",message,my_rank);
-		fflush(stdout);
+		//printf("Rachana Jain: mesage is %s rank is %d\n",message,my_rank);
+		//fflush(stdout);
 		MPI_Recv(message,msg_sz+1,MPI_CHAR,my_rank+4,tag,MPI_COMM_WORLD,&status);
-		printf("PJ:$$$$$$ Message is recieved for rank %d\n",my_rank);
-		fflush(stdout);
+		//printf("Akasj Jain:  MPI_Send sucess is recieved for rank %d\n",my_rank);
+		//fflush(stdout);
 	} else {
 		MPI_Recv(message,msg_sz+1,MPI_CHAR,my_rank-4,tag,MPI_COMM_WORLD,&status);
-		printf("SJ:!!!!!!!!message is recv on %d\n",my_rank);
-		fflush(stdout);
+		//printf("Before:!!!!!!!!message is recv on %d\n",my_rank);
+		//fflush(stdout);
 		MPI_Send(message,msg_sz+1,MPI_CHAR,my_rank-4,tag,MPI_COMM_WORLD);
-		printf("SJ!***** Confirmation send for recv on %d\n",my_rank);
-		fflush(stdout);
+		//printf("After!***** Confirmation send for recv on %d\n",my_rank);
+		//fflush(stdout);
 	}
 	/*
  * 	On Node 0 we send the data to  Node 4
@@ -100,6 +100,7 @@ int main(int argc,char **argv){
 				strcpy(time_p[i],buf);
 			}
 			printf("%d %s %s %s %s\n",msg_sz,time_p[0],time_p[1],time_p[2],time_p[3]);
+			fflush(stdout);
 	} else if(my_rank==1){
 		double time[10]={0.0};
 		char buf[50];
@@ -170,8 +171,8 @@ int main(int argc,char **argv){
 		//recv the data from node 0 and send the same data to Node 0
 		for(int i=0;i<=10;i++){
 			MPI_Recv(message,msg_sz+1,MPI_CHAR,0,tag,MPI_COMM_WORLD,&status);
-			printf("Abhash Jain: Data received is %s for rank %d\n",message,my_rank);
-			fflush(stdout);
+	//		printf("Abhash Jain: Data received is %s for rank %d\n",message,my_rank);
+	//		fflush(stdout);
 			MPI_Send(message,msg_sz+1,MPI_CHAR,0,tag,MPI_COMM_WORLD);
 		}
 	} else if(my_rank==5){

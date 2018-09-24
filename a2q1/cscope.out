@@ -1,4 +1,4 @@
-cscope 15 $HOME/HW2/a2q1               0000512586
+cscope 15 $HOME/HW2/a2q1               0000512587
 	@my_mpi.c
 
 1 
@@ -657,7 +657,7 @@ log_buf
 	`li¡’
 (
 £rv”_fd
-, 10) < 0)
+, 100) < 0)
 
 132 
 	`¥rštf
