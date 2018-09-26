@@ -113,6 +113,7 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
 	double *dt_d;
 	double *t_d;
 	double t=0.,dt=h/2.;
+	double *temp;
 
     /* Set up device timers */  
 	CUDA_CALL(cudaSetDevice(0));
@@ -147,12 +148,14 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
 	/* HW2: Add main lake simulation loop here */
 	while(1){
 		evolve_gpu<<<block,threads>>>(u_d,u1_d,u0_d,peb_d,n_d,h_d,dt_d,t_d);
-		u0_d = u1_d;
+		temp = u1_d;
 		u1_d = u_d;
+		u_d = u0_d;
+		u0_d = temp;
 		if(!tpdt(&t,dt,end_time)) break;
 		cudaMemcpy(t_d,&t,sizeof(double),cudaMemcpyHostToDevice);
 	}
-	cudaMemcpy(u,u_d,sizeof(double)*n*n,cudaMemcpyDeviceToHost);
+	cudaMemcpy(u,u1_d,sizeof(double)*n*n,cudaMemcpyDeviceToHost);
 	
     /* Stop GPU computation timer */
 	CUDA_CALL(cudaEventRecord(kstop, 0));
