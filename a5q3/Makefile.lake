@@ -1,0 +1,7 @@
+all: lake
+
+lake: lake.cu
+	nvcc lake.cu -o ./lake -O3 -lm -Wno-deprecated-gpu-targets
+
+clean: 
+	rm -f lake
