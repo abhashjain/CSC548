@@ -31,7 +31,6 @@
 //Permanent Storage variable taken the backup
 PERM double *u_i0,*u_i1,*u_cpu,*pebs,*un,*uc,*uo;
 PERM double t,dt;
-PERM struct timeval cpu_start, cpu_end;
 
 void init(double *u, double *pebbles, int n);
 void evolve(double *un, double *uc, double *uo, double *pebbles, int n, double h, double dt, double t);
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
   double h;
 
   double elapsed_cpu;
-  //struct timeval cpu_start, cpu_end;
+  struct timeval cpu_start, cpu_end;
   //if restore option is given then restore from the backup file
   if(do_restore){
     printf("Restarting...\n");
@@ -98,9 +97,8 @@ int main(int argc, char *argv[])
   	
   print_heatmap("lake_1.out", u_i0, npoints, h);
 
-  if(!do_restore){
-    gettimeofday(&cpu_start, NULL);
-  }
+  gettimeofday(&cpu_start, NULL);
+
   //call the function by passing the do_restore option
   run_cpu(u_cpu, u_i0, u_i1, pebs, npoints, h, end_time,do_restore);
   
