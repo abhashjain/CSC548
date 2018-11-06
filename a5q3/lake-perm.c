@@ -30,7 +30,7 @@
 
 //Permanent Storage variable taken the backup
 PERM double *u_i0,*u_i1,*u_cpu,*pebs,*un,*uc,*uo;
-PERM double t,dt;
+PERM double t;
 
 void init(double *u, double *pebbles, int n);
 void evolve(double *un, double *uc, double *uo, double *pebbles, int n, double h, double dt, double t);
@@ -138,6 +138,7 @@ void run_cpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
 {
   //double *un, *uc, *uo;
   //double t, dt;
+  double dt;
   //if it is not restore session then allocate the memory for variables
   if(!do_restore){
     un = (double*)malloc(sizeof(double) * n * n);
@@ -148,16 +149,15 @@ void run_cpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
     memcpy(uc, u1, sizeof(double) * n * n);
 
     t = 0.;
-    dt = h / 2.;
   }//end of if do_restore
-
+  dt = h / 2.;
   while(1)
   {
     //evolve(un, uc, uo, pebbles, n, h, dt, t);
     evolve9pt(un, uc, uo, pebbles, n, h, dt, t);
     memcpy(uo, uc, sizeof(double) * n * n);
     memcpy(uc, un, sizeof(double) * n * n);
-    printf(" Iteration for t = %f\n",t);
+    //printf(" Iteration for t = %f\n",t);
     if(!tpdt(&t,dt,end_time)) break;
     //take a backup after each iteration
     backup();
