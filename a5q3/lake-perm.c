@@ -171,8 +171,8 @@ void init_pebbles(double *p, int pn, int n)
   int i, j, k, idx;
   int sz;
 
-  srand( time(NULL) );
-  //srand(1000);
+  //srand( time(NULL) );
+  srand(1000);
   memset(p, 0, sizeof(double) * n * n);
 
   for( k = 0; k < pn ; k++ )
