@@ -1,5 +1,13 @@
 #!/bin/python
 
+###################################################
+# Group Details:
+# asrivas3 Abhishek Kumar Srivastava
+# ajain28 Abhash Jain
+#
+# CSC-548 Assignment#6 Problem#2
+##################################################
+
 #Import libraries for simulation
 import tensorflow as tf
 import numpy as np

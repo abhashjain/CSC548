@@ -1,0 +1,52 @@
+Group Details:
+**asrivas3 Abhishek Kumar Srivastava
+**ajain28  Abhash Jain
+
+PROJECT TITLE: Implementation of Lake Simulation using 13 Pt. Stencil in Python using TensorFlow .
+
+INTRODUCTION: In this project a Lake Simulation is provided using a 5 point stencil and 9 point stencil. Our Task is to write 13 point stencil and generate "dat" output file for image generation.
+
+PREQUISTIES: Python and TensorFlow installed on the system.
+
+RESULTS:
+The execution time taken for N=512, npebs=16 and num_iter=400 is:
+lake.o: 0.628589 seconds
+lake.py: 11.4936389923 seconds
+
+Explanation: This difference in time is due to the fact that the TensoFlow code is written in python while lake.o is written in C, and python code execution is slower than the C code execution. This difference in the time is due to the fact that after compilation the c code is converted to machine instructions directly and runs on it while in python, the code is converted to machine instructions for each line at the time of execution. This run time conversion of the python code leads to the overhead. Another possible reason could be that the TensorFlow code is executing on less number of cores as compared to the OpenMP code.
+
+For different parameters the result is given below:
+
+Grid Size: 512, Number of Peb-16
+Number of Iteration 	| 	400	|	200	| 	100 
+------------------------------------------------------------------------
+Time (in Seconds)	| 10.4302449226	| 5.2855360508 	| 2.65556383133
+
+
+Number of Peb - 16 | Number of Iteration 400
+
+Grid Size		| 	512	|	256	| 	128 	
+-----------------------------------------------------------------------
+Time (in Seconds)	| 10.4302449226	| 3.01067113876 | 1.0150308609
+
+Number of Iteration - 400, Grid Size - 512
+
+Pebbels	| 32		| 16		| 8
+------------------------------------------------------------------
+Time 	| 10.4697210789	| 10.4302449226	| 10.3911371231
+
+
+Explaination: 
+When number of iterations is varied -
+As the number of iteartions are increased, program execution time is also increasing. This is due to the increse in the calculations performed in the tensorflow session.
+
+When grid size is varied -
+As the grid size is increased the time is increasing significantly. This is because as the grid size is increasing the number of calculations are also increasing, hence the increase in the time.
+
+When the number of pebbles is varied -
+As the number of pebbles are varied the time is more or less same. This is because the number of pebbles do not have any impact on the number of calculations performed, hence the time is nearly same.
+
+
+FILES SUBMITTED:
+1. lake.py
+2. p2.README
