@@ -14,7 +14,6 @@ import numpy as np
 import sys
 import time
 import horovod.tensorflow as hvd
-import fcntl
 
 #Imports for visualization
 import PIL.Image
