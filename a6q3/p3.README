@@ -1,0 +1,108 @@
+Group Details:
+**asrivas3 Abhishek Kumar Srivastava
+**ajain28  Abhash Jain
+
+PROJECT TITLE: Implementation of Lake Simulation in Python using TensorFlow and and parallelizing it using Horovod.
+
+INTRODUCTION: In this project a Lake Simulation is provided using a 13 point stencil. Our Task is to parallelize the code on 2 nodes using Horovod.
+
+PREQUISTIES: Python, TensorFlow and Horovod installed on the system.
+
+RESULTS:
+The execution time taken for N=512, npebs=16 and num_iter=400 is:
+lake-horo.py: 128.123684883 seconds	(TensorFlow + Horovod)
+	      128.120027065 seconds
+
+lake.py: 11.4936389923 seconds		(only TensorFlow)
+
+Explanation: Code with horovod is taking more time than the code without horovod. This is because of the overheads incurred due to message exchanges taking place in horovod code.
+
+For different parameters the result is given below:
+
+Grid Size =512 and number of Pebs =16
+
+Iteration		| 100			| 200			| 400
+---------------------------------------------------------------------------------------
+time(Seconds)		| 32.1003658772		| 64.0883259773		| 128.112046003
+
+
+Grid Size = 256 and number of Pebs =16
+
+Iteration		| 100			| 200			| 400
+---------------------------------------------------------------------------------------
+time(Seconds)		| 8.15372514725 	| 16.2861158848		| 32.5337479115
+
+
+Grid Size = 128 and number of Pebs =16
+
+Iteration		| 100			| 200			| 400
+---------------------------------------------------------------------------------------
+time(Seconds)		| 2.56055307388 	| 5.1162750721		| 10.2210919857
+
+
+Grid Size = 512 , Iteration 400
+
+Pebs			| 8			| 16			| 32
+---------------------------------------------------------------------------------------
+time(Seconds)		| 128.236717939 	| 128.112046003		| 128.077627897
+
+Explaination: 
+When number of iterations is varied -
+As the number of iteartions are increased, program execution time is also increasing. This is due to the increse in the calculations performed and increase in the number of message exchanges in the tensorflow session.
+
+When grid size is varied -
+As the grid size is increased the time is increasing significantly. This is because as the grid size is increasing the number of calculations are also increasing as well as the size of the messages being exchanged so larger overhead of message transfer, hence the increase in the time.
+
+When the number of pebbles is varied -
+As the number of pebbles are varied the time is more or less same. This is because the number of pebbles do not have any impact on the number of calculations performed or the number of messages exchanged, hence the time is nearly same.
+
+The detailed output of the above experiment is given below:
+
+> mpirun -np 2 ./lake.py 512 16 200
+Elapsed time: 128.112046003 seconds
+Elapsed time: 128.115078926 seconds
+
+> mpirun -np 2 ./lake.py 512 16 200
+Elapsed time: 64.0883259773 seconds
+Elapsed time: 64.0917198658 seconds
+
+> mpirun -np 2 ./lake.py 512 16 100
+Elapsed time: 32.1003658772 seconds
+Elapsed time: 32.0973598957 seconds
+
+> mpirun -np 2 ./lake.py 128 16 100
+Elapsed time: 2.56055307388 seconds
+Elapsed time: 2.56099796295 seconds
+
+> mpirun -np 2 ./lake.py 128 16 200
+Elapsed time: 5.1162750721 seconds
+Elapsed time: 5.11616587639 seconds
+
+> mpirun -np 2 ./lake.py 128 16 400
+Elapsed time: 10.2210919857 seconds
+Elapsed time: 10.2220349312 seconds
+
+> mpirun -np 2 ./lake.py 256 16 400
+Elapsed time: 32.5337479115 seconds
+Elapsed time: 32.5348269939 seconds
+
+> mpirun -np 2 ./lake.py 256 16 200
+Elapsed time: 16.2861158848 seconds
+Elapsed time: 16.2856850624 seconds
+
+> mpirun -np 2 ./lake.py 256 16 100
+Elapsed time: 8.15372514725 seconds
+Elapsed time: 8.1539721489 seconds
+
+> mpirun -np 2 ./lake.py 512 8 400
+Elapsed time: 128.236717939 seconds
+Elapsed time: 128.233941078 seconds
+
+> mpirun -np 2 ./lake.py 512 32 400
+Elapsed time: 128.077627897 seconds
+Elapsed time: 128.074029207 seconds
+
+
+FILES SUBMITTED:
+1. lake-horo.py
+2. p3.README
