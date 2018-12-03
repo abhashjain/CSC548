@@ -102,6 +102,7 @@ Elapsed time: 128.233941078 seconds
 Elapsed time: 128.077627897 seconds
 Elapsed time: 128.074029207 seconds
 
+NOTE: Please note that the image generated from dat file is rotated clockwise by 90 degree.
 
 FILES SUBMITTED:
 1. lake-horo.py
