@@ -32,7 +32,7 @@ def printHeatmap(u,n,h):
     #u = np.uint8(u)
     for i in range(0,n):
         for j in range(0,n):
-            f.write(str(float(i)*h)+" "+str(float(j)*h)+" "+str(u[i][j])+"\n")
+            f.write(str(float(i)*h)+" "+str(float(j)*h)+" "+str(u[i,j])+"\n")
     f.close()
 
 # Computational Convenience Functions
