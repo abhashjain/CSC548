@@ -123,5 +123,5 @@ for i in range(num_iter):
 
 end = time.time()
 print('Elapsed time: {} seconds'.format(end - start))  
-DisplayArray(U.eval(), rng=[-0.1, 0.1])
+#DisplayArray(U.eval(), rng=[-0.1, 0.1])
 printHeatmap(U.eval(), N, 1.0/float(N))

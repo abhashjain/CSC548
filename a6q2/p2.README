@@ -46,6 +46,7 @@ As the grid size is increased the time is increasing significantly. This is beca
 When the number of pebbles is varied -
 As the number of pebbles are varied the time is more or less same. This is because the number of pebbles do not have any impact on the number of calculations performed, hence the time is nearly same.
 
+NOTE: Please note that the image generated from the dat file is rotated clockwise by 90 degree.
 
 FILES SUBMITTED:
 1. lake.py
